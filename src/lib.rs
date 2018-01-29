@@ -28,6 +28,9 @@ pub struct Event(pub usize);
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Handle(pub usize);
 
+pub type PhysicalAddress = u64;
+pub type VirtualAddress = u64;
+
 #[repr(C)]
 pub struct TableHeader {
     Signature: u64,
