@@ -23,7 +23,7 @@ pub struct BootServices {
     pub Hdr: TableHeader,
     RaiseTpl: extern "win64" fn(NewTpl: usize) -> usize,
     RestoreTpl: extern "win64" fn(OldTpl: usize),
-    pub AllocatePages: extern "win64" fn(AllocType: usize, MemoryType: MemoryType, Pages: usize, Memory: &mut usize) -> Status,
+    pub AllocatePages: extern "win64" fn(AllocType: AllocType, MemoryType: MemoryType, Pages: usize, Memory: &mut usize) -> Status,
     pub FreePages: extern "win64" fn(Memory: usize, Pages: usize) -> Status,
     GetMemoryMap: extern "win64" fn(/* TODO */) -> isize,
     pub AllocatePool: extern "win64" fn(PoolType: MemoryType, Size: usize, Buffer: &mut usize) -> Status,
@@ -65,4 +65,12 @@ pub struct BootServices {
     CopyMem: extern "win64" fn (),
     SetMem: extern "win64" fn (),
     CreateEventEx: extern "win64" fn (),
+}
+
+#[repr(C)]
+pub enum AllocType
+{
+	AnyPages,
+	MaxAddress,
+	Address,
 }
