@@ -26,6 +26,17 @@ pub enum AllocType {
 }
 
 #[repr(C)]
+pub struct MemoryDescriptor {
+	pub ty: u32,
+	_pad: u32,
+	pub physical_start: PhysicalAddress,
+	pub virtual_start: VirtualAddress,
+	pub number_of_pages: u64,
+	pub attribute: u64,
+	_pad2: u64
+}
+
+#[repr(C)]
 pub struct BootServices {
     pub Hdr: TableHeader,
     RaiseTpl: extern "win64" fn(NewTpl: usize) -> usize,
