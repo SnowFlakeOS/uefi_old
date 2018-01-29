@@ -84,4 +84,5 @@ pub struct BootServices {
     CopyMem: extern "win64" fn (),
     SetMem: extern "win64" fn (),
     CreateEventEx: extern "win64" fn (),
+    pub MemoryDescriptor: MemoryDescriptor
 }
