@@ -21,8 +21,8 @@ pub struct SystemTable {
     pub ConsoleError: &'static mut TextOutput,
     pub RuntimeServices: &'static mut RuntimeServices,
     pub BootServices: &'static mut BootServices,
-    pub AllocType: &'static mut AllocType,
-    pub MemoryType: &'static mut MemoryType,
+    pub AllocType: AllocType,
+    pub MemoryType: MemoryType,
     Entries: usize,
     ConfigurationTables: *const ConfigurationTable
 }
