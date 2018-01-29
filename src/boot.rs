@@ -32,7 +32,7 @@ pub struct BootServices {
     RestoreTpl: extern "win64" fn(OldTpl: usize),
     pub AllocatePages: extern "win64" fn(AllocType: AllocType, MemoryType: MemoryType, Pages: usize, Memory: &mut usize) -> Status,
     pub FreePages: extern "win64" fn(Memory: usize, Pages: usize) -> Status,
-    GetMemoryMap: extern "win64" fn(/* TODO */) -> isize,
+    pub GetMemoryMap: extern "win64" fn(&mut usize, *mut MemoryDescriptor, /*map_key:*/ &mut usize, /*descriptor_size:*/ &mut usize, /*descriptor_version:*/ &mut u32) -> isize,
     pub AllocatePool: extern "win64" fn(PoolType: MemoryType, Size: usize, Buffer: &mut usize) -> Status,
     pub FreePool: extern "win64" fn(Buffer: usize) -> Status,
     CreateEvent: extern "win64" fn (),
