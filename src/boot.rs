@@ -1,3 +1,4 @@
+use ::{PhysicalAddress,VirtualAddress};
 use ::{Event, Handle, TableHeader};
 use guid::Guid;
 use memory::MemoryType;
