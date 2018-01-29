@@ -20,9 +20,9 @@ pub enum LocateSearchType {
 
 #[repr(C)]
 pub enum AllocType {
-	pub AnyPages,
-	pub MaxAddress,
-	pub Address
+	AnyPages,
+	MaxAddress,
+	Address
 }
 
 #[repr(C)]
