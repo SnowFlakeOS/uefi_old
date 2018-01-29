@@ -19,6 +19,13 @@ pub enum LocateSearchType {
 }
 
 #[repr(C)]
+pub enum AllocType {
+	pub AnyPages,
+	pub MaxAddress,
+	pub Address
+}
+
+#[repr(C)]
 pub struct BootServices {
     pub Hdr: TableHeader,
     RaiseTpl: extern "win64" fn(NewTpl: usize) -> usize,
@@ -65,12 +72,4 @@ pub struct BootServices {
     CopyMem: extern "win64" fn (),
     SetMem: extern "win64" fn (),
     CreateEventEx: extern "win64" fn (),
-}
-
-#[repr(C)]
-pub enum AllocType
-{
-	AnyPages,
-	MaxAddress,
-	Address,
 }
