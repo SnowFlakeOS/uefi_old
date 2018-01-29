@@ -2,6 +2,8 @@ use core::slice;
 
 use ::{Handle, TableHeader};
 use boot::BootServices;
+use boot::AllocType;
+use memory::MemoryType;
 use config::ConfigurationTable;
 use runtime::RuntimeServices;
 use text::{TextInput, TextOutput};
