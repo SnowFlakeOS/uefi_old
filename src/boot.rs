@@ -4,6 +4,8 @@ use guid::Guid;
 use memory::MemoryType;
 use status::Status;
 
+pub type PoolPointer<T> = *mut T;
+
 #[repr(C)]
 pub enum InterfaceType {
     Native
@@ -45,7 +47,7 @@ pub struct BootServices {
     pub AllocatePages: extern "win64" fn(AllocType: AllocType, MemoryType: MemoryType, Pages: usize, Memory: &mut usize) -> Status,
     pub FreePages: extern "win64" fn(Memory: usize, Pages: usize) -> Status,
     pub GetMemoryMap: extern "win64" fn(&mut usize, *mut MemoryDescriptor, &mut usize, &mut usize, &mut u32) -> Status,
-    pub AllocatePool: extern "win64" fn(PoolType: MemoryType, Size: usize, Buffer: &mut usize) -> Status,
+    pub AllocatePool: extern "win64" fn(MemoryType, usize, &mut PoolPointer<Void>) -> Status,
     pub FreePool: extern "win64" fn(Buffer: usize) -> Status,
     CreateEvent: extern "win64" fn (),
     SetTimer: extern "win64" fn (),
