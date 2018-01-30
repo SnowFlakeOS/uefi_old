@@ -28,6 +28,8 @@ pub struct Event(pub usize);
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Handle(pub usize);
 
+pub enum Void {}
+
 pub type PhysicalAddress = u64;
 pub type VirtualAddress = u64;
 
