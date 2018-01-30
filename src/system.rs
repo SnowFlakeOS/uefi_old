@@ -1,8 +1,7 @@
 use core::slice;
 
 use ::{Handle, TableHeader};
-use boot::BootServices;
-use boot::AllocType;
+use boot::{BootServices, EventNotifyFcn, AllocType};
 use memory::MemoryType;
 use config::ConfigurationTable;
 use runtime::RuntimeServices;
@@ -23,6 +22,7 @@ pub struct SystemTable {
     pub BootServices: &'static mut BootServices,
     pub AllocType: AllocType,
     pub MemoryType: MemoryType,
+    pub EventNotifyFcn: EventNotifyFcn,
     Entries: usize,
     ConfigurationTables: *const ConfigurationTable
 }
