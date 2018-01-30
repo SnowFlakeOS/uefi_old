@@ -1,5 +1,5 @@
 use ::{PhysicalAddress,VirtualAddress};
-use ::{Event, Handle, TableHeader};
+use ::{Void, Event, Handle, TableHeader};
 use guid::Guid;
 use memory::MemoryType;
 use status::Status;
