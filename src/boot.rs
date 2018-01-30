@@ -5,6 +5,15 @@ use memory::MemoryType;
 use status::Status;
 
 pub type PoolPointer<T> = *mut T;
+pub type Tpl = usize;
+pub type EventNotifyFcn = extern "win64" fn(Event, *mut Void) -> ();
+
+#[repr(C)]
+pub enum TimerDelay {
+	Cancel,
+	Periodic,
+	Relative
+}
 
 #[repr(C)]
 pub enum InterfaceType {
@@ -49,12 +58,12 @@ pub struct BootServices {
     pub GetMemoryMap: extern "win64" fn(&mut usize, *mut MemoryDescriptor, &mut usize, &mut usize, &mut u32) -> Status,
     pub AllocatePool: extern "win64" fn(MemoryType, usize, &mut PoolPointer<Void>) -> Status,
     pub FreePool: extern "win64" fn(Buffer: usize) -> Status,
-    CreateEvent: extern "win64" fn (),
-    SetTimer: extern "win64" fn (),
+    pub CreateEvent: extern "win64" fn (u32, /*notify_tpl:*/ Tpl, /*notify_function:*/ Option<EventNotifyFcn>, *mut Void, &mut Event) -> Status,
+    pub SetTimer: extern "win64" fn (Event, TimerDelay, u64) -> Status,
     pub WaitForEvent: extern "win64" fn (NumberOfEvents: usize, Event: *const Event, Index: &mut usize) -> Status,
-    SignalEvent: extern "win64" fn (),
-    CloseEvent: extern "win64" fn (),
-    CheckEvent: extern "win64" fn (),
+    pub SignalEvent: extern "win64" fn (Event) -> Status,
+    pub CloseEvent: extern "win64" fn (Event) -> Status,
+    pub CheckEvent: extern "win64" fn (Event) -> Status,
     pub InstallProtocolInterface: extern "win64" fn (Handle: &mut Handle, Protocol: &Guid, InterfaceType: InterfaceType, Interface: usize) -> Status,
     ReinstallProtocolInterface: extern "win64" fn (),
     pub UninstallProtocolInterface: extern "win64" fn (Handle: Handle, Protocol: &Guid, Interface: usize) -> Status,
@@ -85,6 +94,6 @@ pub struct BootServices {
     CalculateCrc32: extern "win64" fn (),
     CopyMem: extern "win64" fn (),
     SetMem: extern "win64" fn (),
-    CreateEventEx: extern "win64" fn (),
+    pub CreateEventEx: extern "win64" fn (u32, /*notify_tpl:*/ Tpl, /*notify_function:*/ Option<EventNotifyFcn>, *mut Void, &Guid, &mut Event) -> Status,
     pub MemoryDescriptor: MemoryDescriptor,
 }
