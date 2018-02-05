@@ -1,7 +1,7 @@
 use ::{PhysicalAddress,VirtualAddress};
 use ::{Void, Event, Handle, TableHeader};
 use guid::Guid;
-use memory::MemoryType;
+use memory::{MemoryType, MemoryDescriptor};
 use status::Status;
 
 pub type PoolPointer<T> = *mut T;
@@ -35,17 +35,6 @@ pub enum AllocType {
 	AnyPages,
 	MaxAddress,
 	Address
-}
-
-#[repr(C)]
-pub struct MemoryDescriptor {
-	pub ty: u32,
-	_pad: u32,
-	pub physical_start: PhysicalAddress,
-	pub virtual_start: VirtualAddress,
-	pub number_of_pages: u64,
-	pub attribute: u64,
-	_pad2: u64
 }
 
 #[repr(C)]
