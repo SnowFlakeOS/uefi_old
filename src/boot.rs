@@ -37,10 +37,6 @@ pub enum AllocType {
 	Address
 }
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-#[repr(C)]
-pub struct MemoryMapKey(usize);
-
 #[repr(C)]
 pub struct BootServices {
     pub Hdr: TableHeader,
@@ -48,7 +44,7 @@ pub struct BootServices {
     RestoreTpl: extern "win64" fn(OldTpl: usize),
     pub AllocatePages: extern "win64" fn(AllocType: AllocType, MemoryType: MemoryType, Pages: usize, Memory: &mut usize) -> Status,
     pub FreePages: extern "win64" fn(Memory: usize, Pages: usize) -> Status,
-    pub GetMemoryMap: extern "win64" fn(size: &mut usize, map: *mut MemoryDescriptor, key: &mut MemoryMapKey, &mut usize, &mut u32) -> Status,
+    pub GetMemoryMap: extern "win64" fn(size: &mut usize, map: *mut MemoryDescriptor, key: usize, &mut usize, &mut u32) -> Status,
     pub AllocatePool: extern "win64" fn(MemoryType, usize, &mut PoolPointer<Void>) -> Status,
     pub FreePool: extern "win64" fn(Buffer: usize) -> Status,
     pub CreateEvent: extern "win64" fn (u32, /*notify_tpl:*/ Tpl, /*notify_function:*/ Option<EventNotifyFcn>, *mut Void, &mut Event) -> Status,
