@@ -37,6 +37,63 @@ pub enum AllocType {
 	Address
 }
 
+/// Owned vector from the UEFI general pool
+pub struct PoolVec<'a, T>
+{
+	bs: &'a BootServices,
+	ptr: ::core::ptr::Unique<T>,
+	cap: usize,
+	len: usize,
+}
+
+impl<'a,T> PoolVec<'a, T>
+{
+	/// UNSAFE: Pointer must be to `len` valid items, `cap` capacity, and be non-zero
+	pub unsafe fn from_ptr(bs: &BootServices, p: *mut T, cap: usize, len: usize) -> PoolVec<T> {
+		PoolVec {
+			bs: bs,
+			ptr: ::core::ptr::Unique::new_unchecked(p),
+			cap: cap,
+			len: len,
+			}
+	}
+	pub unsafe fn set_len(&mut self, len: usize) {
+		assert!(len <= self.cap);
+		self.len = len;
+	}
+}
+
+impl<'a,T> ::core::ops::Deref for PoolVec<'a, T>
+{
+	type Target = [T];
+	fn deref(&self) -> &[T] {
+		unsafe {
+			::core::slice::from_raw_parts(self.ptr.as_ptr(), self.len)
+		}
+	}
+}
+
+impl<'a,T> ::core::ops::DerefMut for PoolVec<'a, T>
+{
+	fn deref_mut(&mut self) -> &mut [T] {
+		unsafe {
+			::core::slice::from_raw_parts_mut(self.ptr.as_ptr(), self.len)
+		}
+	}
+}
+
+impl<'a,T> ::core::ops::Drop for PoolVec<'a, T>
+{
+	fn drop(&mut self) {
+		unsafe {
+			for v in self.iter_mut() {
+				::core::ptr::drop_in_place(v);
+			}
+			(self.bs.FreePool)(self.ptr.as_ptr() as *mut Void);
+		}
+	}
+}
+
 #[repr(C)]
 pub struct BootServices {
     pub Hdr: TableHeader,
@@ -46,7 +103,7 @@ pub struct BootServices {
     pub FreePages: extern "win64" fn(Memory: usize, Pages: usize) -> Status,
     pub GetMemoryMap: extern "win64" fn(size: &mut usize, map: *mut MemoryDescriptor, key: &mut usize, &mut usize, &mut u32) -> Status,
     pub AllocatePool: extern "win64" fn(MemoryType, usize, &mut PoolPointer<Void>) -> Status,
-    pub FreePool: extern "win64" fn(Buffer: usize) -> Status,
+    pub FreePool: extern "win64" fn(*mut Void) -> Status,
     pub CreateEvent: extern "win64" fn (u32, /*notify_tpl:*/ Tpl, /*notify_function:*/ Option<EventNotifyFcn>, *mut Void, &mut Event) -> Status,
     pub SetTimer: extern "win64" fn (Event, TimerDelay, u64) -> Status,
     pub WaitForEvent: extern "win64" fn (NumberOfEvents: usize, Event: *const Event, Index: &mut usize) -> Status,
@@ -85,4 +142,17 @@ pub struct BootServices {
     SetMem: extern "win64" fn (),
     pub CreateEventEx: extern "win64" fn (u32, /*notify_tpl:*/ Tpl, /*notify_function:*/ Option<EventNotifyFcn>, *mut Void, &Guid, &mut Event) -> Status,
     pub MemoryDescriptor: MemoryDescriptor,
+}
+
+impl BootServices
+{
+	/// Allocate a `Vec`-alike from the firmware's general use pool
+	pub fn AllocatePoolVec<T>(&self, mt: MemoryType, capacity: usize) -> PoolVec<T> {
+		let mut ptr = ::core::ptr::null_mut();
+		// NOTE: AllocatePool returns 8-byte aligned data
+		assert!(::core::mem::align_of::<T>() <= 8);
+		// SAFE: Allocation cannot cause unsafety
+		unsafe { (self.AllocatePool)(mt, capacity * ::core::mem::size_of::<T>(), &mut ptr) };
+		unsafe { PoolVec::from_ptr(self, ptr as *mut T, capacity, 0) }
+	}
 }

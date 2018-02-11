@@ -96,7 +96,7 @@ pub type Result<T> = ::core::result::Result<T, Error>;
 pub struct Status(pub usize);
 
 impl Status {
-    pub fn new(value: usize) -> Self {
+  pub fn new(value: usize) -> Self {
         Status(value)
     }
 }

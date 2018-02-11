@@ -2,6 +2,7 @@
 #![allow(non_snake_case)]
 #![no_std]
 #![feature(try_trait)]
+#![feature(ptr_internals)]
 
 pub mod block_io;
 pub mod boot;
