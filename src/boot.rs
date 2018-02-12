@@ -40,10 +40,10 @@ pub enum AllocType {
 /// Owned vector from the UEFI general pool
 pub struct PoolVec<'a, T>
 {
-	bs: &'a BootServices,
-	ptr: ::core::ptr::Unique<T>,
-	cap: usize,
-	len: usize,
+	pub bs: &'a BootServices,
+	pub ptr: ::core::ptr::Unique<T>,
+	pub cap: usize,
+	pub len: usize,
 }
 
 impl<'a,T> PoolVec<'a, T>
