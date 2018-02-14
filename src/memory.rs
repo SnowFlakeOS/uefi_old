@@ -8,10 +8,12 @@ pub struct VirtualAddress(pub u64);
 #[repr(C)]
 pub struct MemoryDescriptor {
     pub Type: u32,
+    _Pad: u32,
     pub PhysicalStart: PhysicalAddress,
     pub VirtualStart: VirtualAddress,
     pub NumberOfPages: u64,
     pub Attribute: u64,
+    _Pad2: u64,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
