@@ -106,7 +106,7 @@ pub struct BootServices {
     pub FreePool: extern "win64" fn(*mut Void) -> Status,
     pub CreateEvent: extern "win64" fn (u32, /*notify_tpl:*/ Tpl, /*notify_function:*/ Option<EventNotifyFcn>, *mut Void, &mut Event) -> Status,
     pub SetTimer: extern "win64" fn (Event, TimerDelay, u64) -> Status,
-    pub WaitForEvent: extern "win64" fn (NumberOfEvents: usize, Event: *const Event, Index: &mut usize) -> Status,
+    pub WaitForEvent: extern "win64" fn (NumberOfEvents: usize, Event: [Event], Index: &mut usize) -> Status,
     pub SignalEvent: extern "win64" fn (Event) -> Status,
     pub CloseEvent: extern "win64" fn (Event) -> Status,
     pub CheckEvent: extern "win64" fn (Event) -> Status,
