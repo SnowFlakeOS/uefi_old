@@ -141,7 +141,6 @@ pub struct BootServices {
     CopyMem: extern "win64" fn (),
     SetMem: extern "win64" fn (),
     pub CreateEventEx: extern "win64" fn (u32, /*notify_tpl:*/ Tpl, /*notify_function:*/ Option<EventNotifyFcn>, *mut Void, &Guid, &mut Event) -> Status,
-    pub MemoryDescriptor: MemoryDescriptor,
 }
 
 impl BootServices
