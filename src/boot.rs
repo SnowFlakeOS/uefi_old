@@ -1,4 +1,3 @@
-use ::{PhysicalAddress,VirtualAddress};
 use ::{Void, Event, Handle, TableHeader};
 use guid::Guid;
 use memory::{MemoryType, MemoryDescriptor};
@@ -35,63 +34,6 @@ pub enum AllocType {
 	AnyPages,
 	MaxAddress,
 	Address
-}
-
-/// Owned vector from the UEFI general pool
-pub struct PoolVec<'a, T>
-{
-	pub bs: &'a BootServices,
-	pub ptr: ::core::ptr::Unique<T>,
-	pub cap: usize,
-	pub len: usize,
-}
-
-impl<'a,T> PoolVec<'a, T>
-{
-	/// UNSAFE: Pointer must be to `len` valid items, `cap` capacity, and be non-zero
-	pub unsafe fn from_ptr(bs: &BootServices, p: *mut T, cap: usize, len: usize) -> PoolVec<T> {
-		PoolVec {
-			bs: bs,
-			ptr: ::core::ptr::Unique::new_unchecked(p),
-			cap: cap,
-			len: len,
-			}
-	}
-	pub unsafe fn set_len(&mut self, len: usize) {
-		assert!(len <= self.cap);
-		self.len = len;
-	}
-}
-
-impl<'a,T> ::core::ops::Deref for PoolVec<'a, T>
-{
-	type Target = [T];
-	fn deref(&self) -> &[T] {
-		unsafe {
-			::core::slice::from_raw_parts(self.ptr.as_ptr(), self.len)
-		}
-	}
-}
-
-impl<'a,T> ::core::ops::DerefMut for PoolVec<'a, T>
-{
-	fn deref_mut(&mut self) -> &mut [T] {
-		unsafe {
-			::core::slice::from_raw_parts_mut(self.ptr.as_ptr(), self.len)
-		}
-	}
-}
-
-impl<'a,T> ::core::ops::Drop for PoolVec<'a, T>
-{
-	fn drop(&mut self) {
-		unsafe {
-			for v in self.iter_mut() {
-				::core::ptr::drop_in_place(v);
-			}
-			(self.bs.FreePool)(self.ptr.as_ptr() as *mut Void);
-		}
-	}
 }
 
 #[repr(C)]
@@ -141,17 +83,4 @@ pub struct BootServices {
     CopyMem: extern "win64" fn (),
     SetMem: extern "win64" fn (),
     pub CreateEventEx: extern "win64" fn (u32, /*notify_tpl:*/ Tpl, /*notify_function:*/ Option<EventNotifyFcn>, *mut Void, &Guid, &mut Event) -> Status,
-}
-
-impl BootServices
-{
-	/// Allocate a `Vec`-alike from the firmware's general use pool
-	pub fn AllocatePoolVec<T>(&self, mt: MemoryType, capacity: usize) -> PoolVec<T> {
-		let mut ptr = ::core::ptr::null_mut();
-		// NOTE: AllocatePool returns 8-byte aligned data
-		assert!(::core::mem::align_of::<T>() <= 8);
-		// SAFE: Allocation cannot cause unsafety
-		unsafe { (self.AllocatePool)(mt, capacity * ::core::mem::size_of::<T>(), &mut ptr) };
-		unsafe { PoolVec::from_ptr(self, ptr as *mut T, capacity, 0) }
-	}
 }
